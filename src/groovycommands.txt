@@ -1,0 +1,36 @@
+-play
+-join
+-queue
+-next
+-back
+-clear
+-jump
+-loop track
+-loop queue
+-loop off
+-lyrics
+-lyrics
+-pause
+-resume
+-remove
+-disconnect
+-shuffle
+-song
+-24/7
+-bass boost
+-volume
+-speed
+-pitch
+-nightcore
+-vaporwave
+-reset
+-fast
+-rewind
+-search
+-seek
+-stop
+-move
+-saved
+-prefix
+-announce
+-perms
