@@ -3,7 +3,7 @@
 const Discord = require("discord.js");
 const readline = require('readline')
 const client = new Discord.Client();
-const token = 'NjQ4MTg4NzYxMTMzNTQ3NTYw.XdqnDg.O0gWCgX-wnMax1piR7ToUG8GOd0';
+const { prefix, token, giphyKey } = require("./config.json");
 
 const rl = readline.createInterface({
   input: process.stdin,
