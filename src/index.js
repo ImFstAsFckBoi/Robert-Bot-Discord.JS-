@@ -1,30 +1,15 @@
-/* jshint esversion: 6 */
+﻿/* jshint esversion: 6 */
 /* moz */
-const Discord = require("discord.js");
 const { prefix, token, giphyKey } = require("./config.json");
 
-const fs = require('fs')
-const client = new Discord.Client();
-//var groovy = fs.readFileSync('./assets/groovycommands.txt')
-//var grovecomms = groovy.toString().split("\n");
-
-//GIPHY API KEY = pMRG495YskNdTPEi0yrtvWWUT8Atmb97
-
+const Discord = require("discord.js");
 const GphApiClient = require("giphy-js-sdk-core");
-const { exit } = require("process");
+
+const client = new Discord.Client();
 giphy = GphApiClient(giphyKey);
-banned_words = ['nigger', 'nigga', 'Nigger', 'Nigga'];
-const nocco = [
-    'giphy.com/gifs/NOCCO-nocco-icesoda-nocarbscompany-KeWhNLD4Cq1HGa6Dph',
-    'giphy.com/gifs/NOCCO-strawberry-bcaa-nocco-LOL5QdQcaFynX4TN8J',
-    'giphy.com/gifs/NOCCO-peach-bcaa-noccous-huy8ZMNPSqxcWEgzvw',
-    'giphy.com/gifs/NOCCO-training-bcaa-noccous-U1y2jadkDtqQfiAxIw',
-    'giphy.com/gifs/NOCCO-workout-training-caffeine-7NIFnoIpx20iXUw2oK',
-    'giphy.com/gifs/NOCCO-workout-training-nocco-fRau9P1NNXSykhinf9',
-    'giphy.com/gifs/NOCCO-christmas-bcaa-nocco-fQrSoTrlRHOpljnxzO',
-    'giphy.com/gifs/NOCCO-training-passion-nocco-1wQMiCA85tAzb4Gm8d',
-    'giphy.com/gifs/NOCCO-training-caribbean-nocco-X7NFlb3b1oKvqrNguD]'
-];
+
+banned_words = [/nigg((?:er)|(?:a))/i];
+
 const helplist = [
     'gif ...',
     'epadiss @...',
@@ -33,166 +18,160 @@ const helplist = [
 
 ]; 
 
+function playFile (dir, message) { // TODO: TESTA PÅ RD FÅR VERSION ERRORS
+    let voiceChannel = message.member.voiceChannel;
+
+    if (voiceChannel === undefined) {
+        message.channel.send('Must be in voice channel');
+        return;
+    }
+
+    if (voiceChannel.joinable) {
+        console.log("*Connecting...*" + voiceChannel);
+        voiceChannel.join()
+            .then(connection => {
+                console.log("Connected!" + voiceChannel);
+                let dispatcher = connection.playFile(dir);
+
+            dispatcher.on("end", () => {
+                console.log("*Disconnecting...*" + voiceChannel);
+                setTimeout( () => {
+                    voiceChannel.leave();
+                }, 1000);
+            });
+        }); //.catch(() => {
+        //message.channel.send("ERROR: uhuh, i did a fucky wucky, sowwy :flushed: ")
+        //});
+    } else {
+        message.channel.send("Cannot join Voice channel!");
+    }
+}
+
+
 //Startup message
 client.once("ready", () => {
     console.log("__BOT ONLINE!_______CTRL_+_C_=>_STOP__");
     client.channels.get('615075756434915349').send('Robert har vaknat!')
 });
-//Startup message
+
 
 //Message Listener
 client.on('message', (message) => {
-    /*
-    grovecomms.forEach((item, index) => {
-        console.log(item)
-    if (message.channel.id == 615075756434915349 && message.content.indexOf(item) != -1) {
-        console.log('POGGERS!')
-        setTimeout(function() {
-            message.delete();
-        }, 5000);
-        
-        
-    }});
-    */
+    if (message.author.id === "648188761133547560")
+
     try {
         console.log('Message:', message.content, 'Author:', message.member.user.username);
     } catch (error) {
         console.log('Error in reading message or author');
     }
-	if (message.author.id == 264390450360614912) {
-        message.react('🇩🇪')
+
+    switch(message.author.id) {
+        case 264390450360614912:
+            message.react('🇩🇪').then()
+            break;
+
+        case 376748559212740608:
+            message.react('🇫🇮').then()
+            break;
+
+        case 241675681258274817:
+            message.react('🤡').then()
+            break;
     }
-    if (message.author.id == 376748559212740608) {
-		message.react('🇫🇮')
-    }   
-    if (message.author.id == 241675681258274817) {
-        message.react('🤡')
+
+    //TODO: message.content.indexOf('') != -1 function
+
+    if (/varför/i.test(message.content) && !message.author.bot) {
+        message.channel.send(
+            'https://media.discordapp.net/attachments/615075756434915349/707302720800948284/rip_robert.PNG').then()
     }
-    if (message.content.indexOf('varför') != -1 || message.content.indexOf('Varför') != -1 && message.author.bot == false) {
-        message.channel.send('https://media.discordapp.net/attachments/615075756434915349/707302720800948284/rip_robert.PNG')
+
+    if (/69/i.test(message.content) && !message.author.bot) {
+        message.channel.send('Nice!').then()
     }
-    if (message.content.indexOf(';;häst;;') != -1 && message.author.bot == false) {
+
+	if (/godnatt/i.test(message.content) && !message.author.bot) {
+        message.channel.send(`Godnatt ${message.member.user}`).then()
+    }
+	
+	if (/420/i.test(message.content) && !message.author.bot) {
+        message.channel.send('WEED!').then()
+    }
+
+    //TODO: GIF POST function?
+    if (/;;häst;;/.test(message.content) && !message.author.bot) {
         giphy.search("gifs", { q: 'horse' } )
         .then( (response) => {
         
-            var responseFinal = response.data[Math.floor(Math.random() * 10 + 1) % response.data.length];
-            message.channel.send({files: [responseFinal.images.fixed_height.url]});
+            let responseFinal = response.data[Math.floor(Math.random() * 10 + 1) % response.data.length];
+            message.channel.send({files: [responseFinal.images.fixed_height.url]}).then();
         })
         .catch( () => {
             message.channel.send(
                 "ERROR: uhuh, i did a fucky wucky, sowwy :flushed: "
-            );
+            ).then();
         });
     }
-	
-	    if (message.content.indexOf(69) != -1 && message.author.bot == false) {
-        message.channel.send('Nice!')
-    }
-	if (message.content.indexOf('noccocollection') != -1) {
-        for (let i = 0; i < nocco.length; i++) {
-            // Create the attachment using Attachment
-            const attachment = new Discord.MessageAttachment(nocco[i]);
-            message.channel.send(attachment)
+
+    banned_words.forEach((i) => {
+        if (i.test(message.content) && !message.author.bot) {
+
+            if (message.author.id === "241675681258274817") {
+                message.author.send("DAVID!, SLUTA!").then();
+            } else {
+                message.channel.send("SLUTA!").then()
+            }
+            //playFile('assets/reallynigga.mp3', message);
         }
-    }
-	if ((message.content.indexOf(/godnatt/i) != -1 || message.content.indexOf('godnatt') != -1) && message.author.bot == false) {
-        message.channel.send(`Godnatt ${message.member.user}`)
-    }
-	
-	    if (message.content.indexOf(420) != -1 && message.author.bot == false) {
-        message.channel.send('WEED!')
-    }
+    });
 
-	for (let i = 0; i < banned_words.length; i++) {
-		if (message.content.indexOf(banned_words[i]) != -1 && message.author.bot == false) {3
-		
-			if (message.author.id == 241675681258274817) {
-				message.author.send("DAVID!, SLUTA!")
-			} else {
-			
-				message.channel.send("SLUTA!")
-			}
-			
-			if (message.content.startsWith(prefix)) {
-				let voiceChannel = message.member.voiceChannel;
-				if (voiceChannel == undefined) {
-					message.channel.send('Must be in voice channel');
-					break;
-				}
-				
-				if (voiceChannel.joinable) {
-					setTimeout( () => {
-						console.log("*Connecting...*" + voiceChannel);
-						voiceChannel.join()
-							.then(connection => {
-								console.log("Connected!" + voiceChannel);
-								let dispatcher = connection.playFile('assets/reallynigga.mp3');
-
-							dispatcher.on("end", () => {
-								console.log("*Disconnecting...*" + voiceChannel);
-								setTimeout( () => {
-									voiceChannel.leave();
-								}, 1000);
-							});
-						}); //.catch(() => {
-						//message.channel.send("ERROR: uhuh, i did a fucky wucky, sowwy :flushed: ")
-						//});
-					}, 1000);
-				} else {
-					message.channel.send("Cannot you you Voice channel!");
-				}
-			}
-		}
-	}
-	
-
+    //DONT TOUCH TO MUCH ;)
 	const regex = /scp [0-9]{1,4}/;
-    var match = regex.exec(message.content)
+    let match = regex.exec(message.content)
     scp = `${match}`.replace('scp ', '')
 
     while (scp.startsWith('0')) {
         scp = scp.replace('0', '')
     }
 
-    if (match && message.author.bot == false) {
+
+    if (match && !message.author.bot) {
         console.log('scp', scp)
-
+        let entry;
         if (scp.length >= 3) {
-            var entry = `${scp}`
-        } else if (scp.length == 2) {
-            var entry = `0${scp}`            
-        } else if (scp.length == 1) {
-            var entry = `00${scp}`
+            entry = `${scp}`
+        } else if (scp.length === 2) {
+            entry = `0${scp}`
+        } else if (scp.length === 1) {
+            entry = `00${scp}`
         }
-		if (entry == '001' && message.author.id != 174966806606381057) {
-			message.channel.send('Permission denied: O5 clearance required')
-			message.channel.send('http://scp-wiki.wdfiles.com/local--files/scp-001/fractal001')
-		} else {
-			message.channel.send(`http://www.scp-wiki.net/scp-${entry}`)
-			scp = undefined
-		}
-	}
-
-    if (message.author  == client.user) {return;}
-
-    if (message.content.startsWith(prefix)) {
-        message.delete();
+        if (entry === "001" && message.author.id !== "174966806606381057") {
+            message.channel.send('Permission denied: O5 clearance required').then()
+            message.channel.send('http://scp-wiki.wdfiles.com/local--files/scp-001/fractal001').then()
+        } else {
+            message.channel.send(`http://www.scp-wiki.net/scp-${entry}`).then()
+            delete scp;
+        }
     }
 
-    if (message.content.slice(0, 1) != prefix) {return;}
+    /*
+    * ~{THE PREFIX ZONE}~
+    * */
 
-    var swchArgs = message.content.slice(1);
-    if (message.content.startsWith(prefix + 'gif')) {swchArgs = 'gif';}
-    if (message.content.startsWith(prefix + 'epadiss')) { swchArgs = 'epadiss'; }
-    if (message.content.startsWith(prefix + 'juwaini')) { swchArgs = 'juwaini'; }
-    if (message.content.startsWith(prefix + 'väder')) { swchArgs = 'väder'; }
+    if (message.content.slice(0, 1).toString() !== prefix) {return;}
 
-    switch (swchArgs) {
+    let switchArgs = message.content.slice(1);
 
-        
+    if (message.content.startsWith(prefix + 'gif')) {switchArgs = 'gif';}
+    if (message.content.startsWith(prefix + 'epadiss')) { switchArgs = 'epadiss'; }
+    if (message.content.startsWith(prefix + 'juwaini')) { switchArgs = 'juwaini'; }
+
+
+    switch (switchArgs) {
+
         case 'help':
-            for (var i of helplist) {
-                message.channel.send(prefix + i);
+            for (let i of helplist) {
+                message.channel.send(prefix + i).then(); //TODO: DM + EMBED
             }
 
             break;
@@ -201,17 +180,16 @@ client.on('message', (message) => {
             giphy.search("gifs", { q: message.content.slice(4) } )
                 .then( (response) => {
                 
-                    var responseFinal = response.data[Math.floor(Math.random() * 10 + 1) % response.data.length];
-                    message.channel.send("Here is your gif kind sir" + message.author, {files: [responseFinal.images.fixed_height.url]});
+                    let responseFinal = response.data[Math.floor(Math.random() * 10 + 1) % response.data.length];
+                    message.channel.send("Here is your gif kind sir" + message.author, {files: [responseFinal.images.fixed_height.url]}).then();
                 })
                 .catch( () => {
                     message.channel.send(
                         "ERROR: uhuh, i did a fucky wucky, sowwy :flushed: "
-                    );
+                    ).then();
                 });
                 
             break;
-        //GIF search
 
         //Play soundfile
         case 'juice':
@@ -229,7 +207,7 @@ client.on('message', (message) => {
 
             let dir;
 
-            switch (swchArgs) {
+            switch (switchArgs) {
                 case 'juice':
                     dir = 'assets/juice2.mp3';
                     break;
@@ -268,76 +246,56 @@ client.on('message', (message) => {
                     break
             }	
 
-            let voiceChannel = message.member.voiceChannel;
-            if (voiceChannel == undefined) {
-                message.channel.send('Must be in voice channel');
-                break;
-            }
-            
-            if (voiceChannel.joinable) {
-                console.log("*Connecting...*" + voiceChannel);
-                voiceChannel.join()
-                    .then(connection => {
-                        console.log("Connected!" + voiceChannel);
-                        let dispatcher = connection.playFile(dir);
-
-                    dispatcher.on("end", () => {
-                        console.log("*Disconnecting...*" + voiceChannel);
-                        setTimeout( () => {
-                            voiceChannel.leave();
-                        }, 1000);
-                    });
-                }); //.catch(() => {
-                //message.channel.send("ERROR: uhuh, i did a fucky wucky, sowwy :flushed: ")
-                //});
-            } else {
-                message.channel.send("Cannot join Voice channel!");
-            }
+            playFile(dir, message);
 
             break;
-        //Play soundfile
+
+        //FUNKAR??
         //Epadiss
         case 'epadiss':
             let member2 = message.mentions.members.first();
 
-            message.channel.send(":fire:", member2, "innehaver en epa med bristande kvalitet!", ":fire:");
+            message.channel.send(":fire: " + member2 + "innehaver en epa med bristande kvalitet! " + ":fire:").then();
             break;
-        //Epadiss
+        
 
         //Juwaini
         case 'juwaini':
-            var user = message.mentions.users.first();
+            let user = message.mentions.users.first();
 
             if (message.content.includes("kärlek")) {
-                user.send(":notes: You are my :fire: :notes:\n// Juwaini");
+                user.send(":notes: You are my :fire: :notes:\n// Juwaini").then();
             } else if (message.content.includes("megahot")) {
-                user.send(":baby: Jag kommer göra dig miscarriage :skull_crossbones:\n// Juwaini");
+                user.send(":baby: Jag kommer göra dig miscarriage :skull_crossbones:\n// Juwaini").then();
             } else if (message.content.includes("hot")) {
-                user.send("Din mamma var inte tyst igår\n// Juwaini");
+                user.send("Din mamma var inte tyst igår\n// Juwaini").then();
             }
             
             break;
+        
 
+            //FUNKAR ??
         case '§connect':
         case '§ringdalahästen':
-            message.member.voiceChannel.join();
-            console.log("Connected!" + message.member.voiceChannel);
+            try {
+                message.member.voiceChannel.join().then();
+                console.log("Connected!" + message.member.voiceChannel);
+                break;
+            } catch (TypeError) {
+                console.log("channel undefined")
+            }
+
             break;
         
         case '§disconnect':
             message.member.voiceChannel.leave();
             console.log("Disconected!!" + message.member.voiceChannel);
             break;
-        //Juwaini
+    }
 
-        case 'väder':
-            
-            break;
-            
+    if (message.content.startsWith(prefix)) {
+        message.delete().then();
     }
 });
-//Message Listener
-client.on('error', () => {
-    client.channels.get('615075756434915349').send('Robert död : ^ (')
-});
-client.login(token);
+
+client.login(token).then();
