@@ -11,14 +11,16 @@ giphy = GphApiClient(giphyKey);
 banned_words = [/nigg((?:er)|(?:a))/i];
 
 const helplist = [
+    `Command prefix: ${prefix}`,
     'gif ...',
-    'epadiss @...',
-    'juwaini kärlek/hot/megahot @...',
-    'juice/pappa/sabai/brum/pumpar/bigtime/bigtimerush/nigga/fuck/stalingrad',
-
+    'juice/pappa/sabai/brum/pumpar/bigtime/bigtimerush/nigga/fuck/stalingrad'
 ]; 
 
+<<<<<<< HEAD
 function playFile (dir, message) { // TODO: TESTA PÅ RD FÅR VERSION ERRORS
+=======
+function playFile (dir, message) {
+>>>>>>> ca1986e561139ee6676d711cb41bf31782d2c8ea
     let voiceChannel = message.member.voiceChannel;
 
     if (voiceChannel === undefined) {
@@ -47,7 +49,10 @@ function playFile (dir, message) { // TODO: TESTA PÅ RD FÅR VERSION ERRORS
     }
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ca1986e561139ee6676d711cb41bf31782d2c8ea
 //Startup message
 client.once("ready", () => {
     console.log("__BOT ONLINE!_______CTRL_+_C_=>_STOP__");
@@ -79,8 +84,11 @@ client.on('message', (message) => {
             break;
     }
 
+<<<<<<< HEAD
     //TODO: message.content.indexOf('') != -1 function
 
+=======
+>>>>>>> ca1986e561139ee6676d711cb41bf31782d2c8ea
     if (/varför/i.test(message.content) && !message.author.bot) {
         message.channel.send(
             'https://media.discordapp.net/attachments/615075756434915349/707302720800948284/rip_robert.PNG').then()
@@ -115,6 +123,7 @@ client.on('message', (message) => {
 
     banned_words.forEach((i) => {
         if (i.test(message.content) && !message.author.bot) {
+<<<<<<< HEAD
 
             if (message.author.id === "241675681258274817") {
                 message.author.send("DAVID!, SLUTA!").then();
@@ -125,6 +134,18 @@ client.on('message', (message) => {
         }
     });
 
+=======
+
+            if (message.author.id === "241675681258274817") {
+                message.author.send("DAVID!, SLUTA!").then();
+            } else {
+                message.channel.send("SLUTA!").then()
+            }
+            //playFile('assets/reallynigga.mp3', message);
+        }
+    });
+
+>>>>>>> ca1986e561139ee6676d711cb41bf31782d2c8ea
     //DONT TOUCH TO MUCH ;)
 	const regex = /scp [0-9]{1,4}/;
     let match = regex.exec(message.content)
@@ -249,6 +270,7 @@ client.on('message', (message) => {
             playFile(dir, message);
 
             break;
+<<<<<<< HEAD
 
         //FUNKAR??
         //Epadiss
@@ -273,6 +295,8 @@ client.on('message', (message) => {
             
             break;
         
+=======
+>>>>>>> ca1986e561139ee6676d711cb41bf31782d2c8ea
 
             //FUNKAR ??
         case '§connect':
