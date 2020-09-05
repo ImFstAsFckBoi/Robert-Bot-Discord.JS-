@@ -16,11 +16,7 @@ const helplist = [
     'juice/pappa/sabai/brum/pumpar/bigtime/bigtimerush/nigga/fuck/stalingrad'
 ]; 
 
-<<<<<<< HEAD
-function playFile (dir, message) { // TODO: TESTA PÅ RD FÅR VERSION ERRORS
-=======
 function playFile (dir, message) {
->>>>>>> ca1986e561139ee6676d711cb41bf31782d2c8ea
     let voiceChannel = message.member.voiceChannel;
 
     if (voiceChannel === undefined) {
@@ -49,10 +45,6 @@ function playFile (dir, message) {
     }
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> ca1986e561139ee6676d711cb41bf31782d2c8ea
 //Startup message
 client.once("ready", () => {
     console.log("__BOT ONLINE!_______CTRL_+_C_=>_STOP__");
@@ -84,11 +76,8 @@ client.on('message', (message) => {
             break;
     }
 
-<<<<<<< HEAD
     //TODO: message.content.indexOf('') != -1 function
 
-=======
->>>>>>> ca1986e561139ee6676d711cb41bf31782d2c8ea
     if (/varför/i.test(message.content) && !message.author.bot) {
         message.channel.send(
             'https://media.discordapp.net/attachments/615075756434915349/707302720800948284/rip_robert.PNG').then()
@@ -123,8 +112,6 @@ client.on('message', (message) => {
 
     banned_words.forEach((i) => {
         if (i.test(message.content) && !message.author.bot) {
-<<<<<<< HEAD
-
             if (message.author.id === "241675681258274817") {
                 message.author.send("DAVID!, SLUTA!").then();
             } else {
@@ -134,18 +121,6 @@ client.on('message', (message) => {
         }
     });
 
-=======
-
-            if (message.author.id === "241675681258274817") {
-                message.author.send("DAVID!, SLUTA!").then();
-            } else {
-                message.channel.send("SLUTA!").then()
-            }
-            //playFile('assets/reallynigga.mp3', message);
-        }
-    });
-
->>>>>>> ca1986e561139ee6676d711cb41bf31782d2c8ea
     //DONT TOUCH TO MUCH ;)
 	const regex = /scp [0-9]{1,4}/;
     let match = regex.exec(message.content)
@@ -154,7 +129,6 @@ client.on('message', (message) => {
     while (scp.startsWith('0')) {
         scp = scp.replace('0', '')
     }
-
 
     if (match && !message.author.bot) {
         console.log('scp', scp)
@@ -198,16 +172,11 @@ client.on('message', (message) => {
             break;
         //GIF search
         case 'gif':
-            giphy.search("gifs", { q: message.content.slice(4) } )
-                .then( (response) => {
-                
+            giphy.search("gifs", {q: message.content.slice(4)}).then( (response) => {
                     let responseFinal = response.data[Math.floor(Math.random() * 10 + 1) % response.data.length];
                     message.channel.send("Here is your gif kind sir" + message.author, {files: [responseFinal.images.fixed_height.url]}).then();
-                })
-                .catch( () => {
-                    message.channel.send(
-                        "ERROR: uhuh, i did a fucky wucky, sowwy :flushed: "
-                    ).then();
+                }).catch( () => {
+                    message.channel.send("ERROR: uhuh, i did a fucky wucky, sowwy :flushed: ").then();
                 });
                 
             break;
@@ -270,35 +239,7 @@ client.on('message', (message) => {
             playFile(dir, message);
 
             break;
-<<<<<<< HEAD
 
-        //FUNKAR??
-        //Epadiss
-        case 'epadiss':
-            let member2 = message.mentions.members.first();
-
-            message.channel.send(":fire: " + member2 + "innehaver en epa med bristande kvalitet! " + ":fire:").then();
-            break;
-        
-
-        //Juwaini
-        case 'juwaini':
-            let user = message.mentions.users.first();
-
-            if (message.content.includes("kärlek")) {
-                user.send(":notes: You are my :fire: :notes:\n// Juwaini").then();
-            } else if (message.content.includes("megahot")) {
-                user.send(":baby: Jag kommer göra dig miscarriage :skull_crossbones:\n// Juwaini").then();
-            } else if (message.content.includes("hot")) {
-                user.send("Din mamma var inte tyst igår\n// Juwaini").then();
-            }
-            
-            break;
-        
-=======
->>>>>>> ca1986e561139ee6676d711cb41bf31782d2c8ea
-
-            //FUNKAR ??
         case '§connect':
         case '§ringdalahästen':
             try {
