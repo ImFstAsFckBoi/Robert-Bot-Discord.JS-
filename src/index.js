@@ -1,5 +1,6 @@
 ﻿/* jshint esversion: 6 */
 /* moz */
+
 const { prefix, token, giphyKey } = require("./config.json");
 
 const Discord = require("discord.js");
@@ -8,13 +9,22 @@ const GphApiClient = require("giphy-js-sdk-core");
 const client = new Discord.Client();
 giphy = GphApiClient(giphyKey);
 
-banned_words = [/nigg((?:er)|(?:a))/i];
+banned_words = [/nigg((?:er)|(?:a))/i, /neger/i];
 
 const helplist = [
     `Command prefix: ${prefix}`,
     'gif ...',
     'juice/pappa/sabai/brum/pumpar/bigtime/bigtimerush/nigga/fuck/stalingrad'
 ]; 
+
+function gifSearch(searchTerm, _message) {
+    giphy.search("gifs", {q: searchTerm}).then( (response) => {
+        let responseFinal = response.data[Math.floor(Math.random() * 10 + 1) % response.data.length];
+        _message.channel.send("Here is your gif kind sir" + _message.author, {files: [responseFial.images.fixed_height.url]}).then();
+    }).catch( () => {
+        _message.channel.send("ERROR: uhuh, i did a fucky wucky, sowwy :flushed: ").then();
+    });
+}
 
 function playFile (dir, message) {
     let voiceChannel = message.member.voiceChannel;
@@ -63,20 +73,19 @@ client.on('message', (message) => {
     }
 
     switch(message.author.id) {
-        case 264390450360614912:
+
+        case "264390450360614912":
             message.react('🇩🇪').then()
             break;
 
-        case 376748559212740608:
+        case "376748559212740608":
             message.react('🇫🇮').then()
             break;
 
-        case 241675681258274817:
+        /*case "174966806606381057":
             message.react('🤡').then()
-            break;
+            break;*/
     }
-
-    //TODO: message.content.indexOf('') != -1 function
 
     if (/varför/i.test(message.content) && !message.author.bot) {
         message.channel.send(
@@ -95,19 +104,8 @@ client.on('message', (message) => {
         message.channel.send('WEED!').then()
     }
 
-    //TODO: GIF POST function?
     if (/;;häst;;/.test(message.content) && !message.author.bot) {
-        giphy.search("gifs", { q: 'horse' } )
-        .then( (response) => {
-        
-            let responseFinal = response.data[Math.floor(Math.random() * 10 + 1) % response.data.length];
-            message.channel.send({files: [responseFinal.images.fixed_height.url]}).then();
-        })
-        .catch( () => {
-            message.channel.send(
-                "ERROR: uhuh, i did a fucky wucky, sowwy :flushed: "
-            ).then();
-        });
+        gifSearch("Horse", message)
     }
 
     banned_words.forEach((i) => {
@@ -117,7 +115,6 @@ client.on('message', (message) => {
             } else {
                 message.channel.send("SLUTA!").then()
             }
-            //playFile('assets/reallynigga.mp3', message);
         }
     });
 
@@ -130,6 +127,7 @@ client.on('message', (message) => {
         scp = scp.replace('0', '')
     }
 
+    // SCP SERACH MONKA
     if (match && !message.author.bot) {
         console.log('scp', scp)
         let entry;
@@ -148,18 +146,19 @@ client.on('message', (message) => {
             delete scp;
         }
     }
+    // SCP SERACH MONKA
 
     /*
-    * ~{THE PREFIX ZONE}~
-    * */
+     * ~{THE PREFIX ZONE}~
+     */
 
     if (message.content.slice(0, 1).toString() !== prefix) {return;}
 
     let switchArgs = message.content.slice(1);
 
     if (message.content.startsWith(prefix + 'gif')) {switchArgs = 'gif';}
-    if (message.content.startsWith(prefix + 'epadiss')) { switchArgs = 'epadiss'; }
-    if (message.content.startsWith(prefix + 'juwaini')) { switchArgs = 'juwaini'; }
+    else if (message.content.startsWith(prefix + 'epadiss')) { switchArgs = 'epadiss'; }
+    else if (message.content.startsWith(prefix + 'juwaini')) { switchArgs = 'juwaini'; }
 
 
     switch (switchArgs) {
@@ -172,28 +171,12 @@ client.on('message', (message) => {
             break;
         //GIF search
         case 'gif':
-            giphy.search("gifs", {q: message.content.slice(4)}).then( (response) => {
-                    let responseFinal = response.data[Math.floor(Math.random() * 10 + 1) % response.data.length];
-                    message.channel.send("Here is your gif kind sir" + message.author, {files: [responseFinal.images.fixed_height.url]}).then();
-                }).catch( () => {
-                    message.channel.send("ERROR: uhuh, i did a fucky wucky, sowwy :flushed: ").then();
-                });
+            gifSearch(message.content.slice(4), message)
                 
             break;
 
         //Play soundfile
-        case 'juice':
-        case 'pappa':
-        case 'sabai':
-        case 'brum':
-        case 'pumpar':
-        case 'bigtimerush':
-        case 'bigtime':
-		case 'pontus':
-		case'fuck':
-		case 'stalingrad':
-		case 'corpus':
-        case 'anis':
+        default:
 
             let dir;
 
@@ -223,7 +206,7 @@ client.on('message', (message) => {
 					dir = 'assets/pontus.mp3';
 					break;
 				case 'fuck':
-					dir = 'assets/Fuck_no_baby_vine-[AudioTrimmer.com].mp3';	
+					dir = 'assets/Fuck_no_baby_vine-[AudioTrimmer.com].mp3';
                     break;
 				case 'stalingrad':
 					dir = 'assets/stalingrad.mp3'
@@ -234,7 +217,9 @@ client.on('message', (message) => {
                 case 'anis':
                     dir = 'assets/anis.mp3'
                     break
-            }	
+                default:
+                    break
+            }
 
             playFile(dir, message);
 
