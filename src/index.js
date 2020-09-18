@@ -26,8 +26,8 @@ function gifSearch(searchTerm, _message) {
     });
 }
 
-function playFile (dir, message) {
-    let voiceChannel = message.member.voiceChannel;
+function playFile (dir, message, vc = message.member.voiceChannel) {
+    let voiceChannel = vc;
 
     if (voiceChannel === undefined) {
         message.channel.send('Must be in voice channel');
@@ -106,6 +106,14 @@ client.on('message', (message) => {
 
     if (/;;häst;;/.test(message.content) && !message.author.bot) {
         gifSearch("Horse", message)
+    }
+
+    if (/disclaimer/.test(message.content) && !message.author.bot) {
+        message.channel.send("https://images-ext-1.discordapp.net/external/9wvdoyYOWGK7YHVhT7dpb-iWMRCleJ1qDCTujbyjRIE/https/media.discordapp.net/attachments/615075756434915349/755022937387433995/gif_2.gif")
+    }
+
+    if (/queer/.test(message.content) && !message.author.bot) {
+        message.channel.send("Queer är en slur")
     }
 
     banned_words.forEach((i) => {
@@ -225,6 +233,10 @@ client.on('message', (message) => {
 
             break;
 
+        case 'prank':
+            //console.log(message.author.voiceChannel + typeof(message.author.voiceChannel))
+            playFile('assets/bigtime.mp3', message, client.channels.get('743070954900553871'))
+            break;
         case '§connect':
         case '§ringdalahästen':
             try {
