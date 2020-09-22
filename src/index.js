@@ -1,21 +1,39 @@
 ﻿/* jshint esversion: 6 */
 /* moz */
 
+let devmode = true;
+
 const { prefix, token, giphyKey } = require("./config.json");
 
+const fs = require('fs')
 const Discord = require("discord.js");
 const GphApiClient = require("giphy-js-sdk-core");
 
 const client = new Discord.Client();
 giphy = GphApiClient(giphyKey);
 
-banned_words = [/nigg((?:er)|(?:a))/i, /neger/i];
+banned_words = [/n+[ie]+g+((?:e+r+)|(?:a+))/im];
 
 const helplist = [
     `Command prefix: ${prefix}`,
     'gif ...',
     'juice/pappa/sabai/brum/pumpar/bigtime/bigtimerush/nigga/fuck/stalingrad'
-]; 
+];
+
+function nWordCounter(_message) {
+    fs.readFile('./nord.json', (error, data) => {
+        console.log(data.toString())
+        let json = JSON.parse(data);
+
+        json[_message.author.id.toString()] += 1;
+
+        fs.writeFile('./nord.json', JSON.stringify(json), "utf8", (error, data) => {
+            if (error) {
+                console.log(error)
+            }
+        });
+    });
+}
 
 function gifSearch(searchTerm, _message) {
     giphy.search("gifs", {q: searchTerm}).then( (response) => {
@@ -58,7 +76,10 @@ function playFile (dir, message, vc = message.member.voiceChannel) {
 //Startup message
 client.once("ready", () => {
     console.log("__BOT ONLINE!_______CTRL_+_C_=>_STOP__");
-    client.channels.get('615075756434915349').send('Robert har vaknat!')
+
+    if (!devmode) {
+        client.channels.get('615075756434915349').send('Robert har vaknat!')
+    }
 });
 
 
@@ -85,6 +106,16 @@ client.on('message', (message) => {
         /*case "174966806606381057":
             message.react('🤡').then()
             break;*/
+    }
+
+    function MessageReact( regex, message) {
+        if (regex.test(message.content) && !message.author.bot) {
+            message.channel.send(message)
+        }
+    }
+
+    function MessageReactSendMessage() {
+
     }
 
     if (/varför/i.test(message.content) && !message.author.bot) {
@@ -123,7 +154,10 @@ client.on('message', (message) => {
             } else {
                 message.channel.send("SLUTA!").then()
             }
+
+            nWordCounter(message);
         }
+
     });
 
     //DONT TOUCH TO MUCH ;)
@@ -167,6 +201,8 @@ client.on('message', (message) => {
     if (message.content.startsWith(prefix + 'gif')) {switchArgs = 'gif';}
     else if (message.content.startsWith(prefix + 'epadiss')) { switchArgs = 'epadiss'; }
     else if (message.content.startsWith(prefix + 'juwaini')) { switchArgs = 'juwaini'; }
+    else if (message.content.startsWith(prefix + prefix + 'kill')) {switchArgs = '§kill'}
+    else if (message.content.startsWith(prefix + 'nw')) {switchArgs = 'nw'}
 
 
     switch (switchArgs) {
@@ -237,6 +273,24 @@ client.on('message', (message) => {
             //console.log(message.author.voiceChannel + typeof(message.author.voiceChannel))
             playFile('assets/bigtime.mp3', message, client.channels.get('743070954900553871'))
             break;
+
+        case "nw":
+            if (/ls/i.test(message.content)) {
+                fs.readFile('./nord.json', (error, data) => {
+                    let msg = "";
+
+                    console.log(__dirname)
+                    console.log(data.toString())
+
+                    for ([key, value] of Object.entries(JSON.parse(data))) {
+                        msg += `${client.fetchUser(key.toString())}: ${value} \n`
+                    }
+
+                    message.channel.send(msg);
+                })
+            }
+            break;
+
         case '§connect':
         case '§ringdalahästen':
             try {
@@ -253,6 +307,17 @@ client.on('message', (message) => {
             message.member.voiceChannel.leave();
             console.log("Disconected!!" + message.member.voiceChannel);
             break;
+
+        case '§test':
+            nWordCounter(message)
+            break;
+
+        case '§kill':
+            code = message.content.slice(7)
+            console.log("EXIT WITH CODE:", code)
+            message.delete().then();
+            process.exit(code);
+            break;
     }
 
     if (message.content.startsWith(prefix)) {
@@ -261,3 +326,9 @@ client.on('message', (message) => {
 });
 
 client.login(token).then();
+
+/*
+client.on('disconnect', (message) => {
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAA")
+})
+*/
