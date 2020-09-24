@@ -1,7 +1,7 @@
 ﻿/* jshint esversion: 6 */
 /* moz */
 
-let devmode = true;
+let devmode = false;
 
 const { prefix, token, giphyKey } = require("./config.json");
 
@@ -12,7 +12,7 @@ const GphApiClient = require("giphy-js-sdk-core");
 const client = new Discord.Client();
 giphy = GphApiClient(giphyKey);
 
-banned_words = [/n+[ie]+g+((?:e+r+)|(?:a+))/im];
+banned_words = [/n+[ie]+g+((?:e+r+)|(?:a+))/im, /knee gear/im];
 
 const helplist = [
     `Command prefix: ${prefix}`,
@@ -22,12 +22,11 @@ const helplist = [
 
 function nWordCounter(_message) {
     fs.readFile('./nord.json', (error, data) => {
-        console.log(data.toString())
-        let json = JSON.parse(data);
+        let json = JSON.parse(data.toString());
 
         json[_message.author.id.toString()] += 1;
 
-        fs.writeFile('./nord.json', JSON.stringify(json), "utf8", (error, data) => {
+        fs.writeFile('./nord.json', JSON.stringify(json), "utf8", (error) => {
             if (error) {
                 console.log(error)
             }
@@ -35,42 +34,47 @@ function nWordCounter(_message) {
     });
 }
 
-function gifSearch(searchTerm, _message) {
+function gifSearch(searchTerm, _message) { //TODO: NEEDS TO BE FIXED DONT KNOW HOW
     giphy.search("gifs", {q: searchTerm}).then( (response) => {
         let responseFinal = response.data[Math.floor(Math.random() * 10 + 1) % response.data.length];
-        _message.channel.send("Here is your gif kind sir" + _message.author, {files: [responseFial.images.fixed_height.url]}).then();
+        _message.channel.send("Here is your gif kind sir" + _message.author, {files: [responseFinal.images.fixed_height.url]}).then();
     }).catch( () => {
         _message.channel.send("ERROR: uhuh, i did a fucky wucky, sowwy :flushed: ").then();
     });
 }
 
 function playFile (dir, message, vc = message.member.voiceChannel) {
-    let voiceChannel = vc;
+    try {
+        let voiceChannel = vc;
 
-    if (voiceChannel === undefined) {
-        message.channel.send('Must be in voice channel');
-        return;
+        if (voiceChannel === undefined) {
+            message.channel.send('Must be in voice channel');
+            return;
+        }
+
+        if (voiceChannel.joinable) {
+            console.log("*Connecting...*" + voiceChannel);
+            voiceChannel.join()
+                .then(connection => {
+                    console.log("Connected!" + voiceChannel);
+                    let dispatcher = connection.playFile(dir);
+
+                    dispatcher.on("end", () => {
+                        console.log("*Disconnecting...*" + voiceChannel);
+                        setTimeout( () => {
+                            voiceChannel.leave();
+                        }, 1000);
+                    });
+                }); //.catch(() => {
+            //message.channel.send("ERROR: uhuh, i did a fucky wucky, sowwy :flushed: ")
+            //});
+        } else {
+            message.channel.send("Cannot join Voice channel!");
+        }
+    } catch {
+            message.member.voiceChannel.leave().catch();
     }
 
-    if (voiceChannel.joinable) {
-        console.log("*Connecting...*" + voiceChannel);
-        voiceChannel.join()
-            .then(connection => {
-                console.log("Connected!" + voiceChannel);
-                let dispatcher = connection.playFile(dir);
-
-            dispatcher.on("end", () => {
-                console.log("*Disconnecting...*" + voiceChannel);
-                setTimeout( () => {
-                    voiceChannel.leave();
-                }, 1000);
-            });
-        }); //.catch(() => {
-        //message.channel.send("ERROR: uhuh, i did a fucky wucky, sowwy :flushed: ")
-        //});
-    } else {
-        message.channel.send("Cannot join Voice channel!");
-    }
 }
 
 //Startup message
@@ -85,13 +89,15 @@ client.once("ready", () => {
 
 //Message Listener
 client.on('message', (message) => {
-    if (message.author.id === "648188761133547560")
-
-    try {
-        console.log('Message:', message.content, 'Author:', message.member.user.username);
-    } catch (error) {
-        console.log('Error in reading message or author');
+    if (message.author.id.toString() !== "648188761133547560") {
+        try {
+            console.log('Message:', message.content, 'Author:', message.member.user.username);
+        } catch (error) {
+            console.log('Error in reading message or author');
+        }
     }
+
+
 
     switch(message.author.id) {
 
@@ -108,6 +114,7 @@ client.on('message', (message) => {
             break;*/
     }
 
+    /*
     function MessageReact( regex, message) {
         if (regex.test(message.content) && !message.author.bot) {
             message.channel.send(message)
@@ -116,35 +123,34 @@ client.on('message', (message) => {
 
     function MessageReactSendMessage() {
 
-    }
+    }*/
 
     if (/varför/i.test(message.content) && !message.author.bot) {
-        message.channel.send(
-            'https://media.discordapp.net/attachments/615075756434915349/707302720800948284/rip_robert.PNG').then()
+        message.channel.send('https://media.discordapp.net/attachments/615075756434915349/707302720800948284/rip_robert.PNG').then();
     }
 
     if (/69/i.test(message.content) && !message.author.bot) {
-        message.channel.send('Nice!').then()
+        message.channel.send('Nice!').then();
     }
 
 	if (/godnatt/i.test(message.content) && !message.author.bot) {
-        message.channel.send(`Godnatt ${message.member.user}`).then()
+        message.channel.send(`Godnatt ${message.member.user}`).then();
     }
 	
 	if (/420/i.test(message.content) && !message.author.bot) {
-        message.channel.send('WEED!').then()
+        message.channel.send('WEED!').then();
     }
 
     if (/;;häst;;/.test(message.content) && !message.author.bot) {
-        gifSearch("Horse", message)
+        gifSearch("Horse", message);
     }
 
     if (/disclaimer/.test(message.content) && !message.author.bot) {
-        message.channel.send("https://images-ext-1.discordapp.net/external/9wvdoyYOWGK7YHVhT7dpb-iWMRCleJ1qDCTujbyjRIE/https/media.discordapp.net/attachments/615075756434915349/755022937387433995/gif_2.gif")
+        message.channel.send("https://images-ext-1.discordapp.net/external/9wvdoyYOWGK7YHVhT7dpb-iWMRCleJ1qDCTujbyjRIE/https/media.discordapp.net/attachments/615075756434915349/755022937387433995/gif_2.gif").then();
     }
 
     if (/queer/.test(message.content) && !message.author.bot) {
-        message.channel.send("Queer är en slur")
+        message.channel.send("Queer är en slur").then();
     }
 
     banned_words.forEach((i) => {
@@ -161,6 +167,7 @@ client.on('message', (message) => {
     });
 
     //DONT TOUCH TO MUCH ;)
+    let scp
 	const regex = /scp [0-9]{1,4}/;
     let match = regex.exec(message.content)
     scp = `${match}`.replace('scp ', '')
@@ -275,21 +282,42 @@ client.on('message', (message) => {
             break;
 
         case "nw":
-            if (/ls/i.test(message.content)) {
-                fs.readFile('./nord.json', (error, data) => {
-                    let msg = "";
+                if (!/ls/i.test(message.content)) {
+                    break;
+                }
 
-                    console.log(__dirname)
-                    console.log(data.toString())
+                if (message.mentions.users.first())
+                {
+                    let user = message.mentions.users.first();
 
-                    for ([key, value] of Object.entries(JSON.parse(data))) {
-                        msg += `${client.fetchUser(key.toString())}: ${value} \n`
-                    }
+                    fs.readFile('./nord.json', (error, data) => {
+                        let msg = "";
 
-                    message.channel.send(msg);
-                })
-            }
-            break;
+                        for ([key, value] of Object.entries(JSON.parse(data.toString()))) {
+                            if (user.id.toString() === key) {
+                                msg += `${client.users.get(key).username}: ${value} \n`;
+                            }
+                        }
+
+                        msg += "\n"
+                        //console.log(msg);
+                        message.channel.send(msg).then();
+                    });
+                } else {
+                    fs.readFile('./nord.json', (error, data) => {
+                        let msg = "";
+
+                        for ([key, value] of Object.entries(JSON.parse(data.toString()))) {
+                            msg += `${client.users.get(key).username}: ${value} \n`;
+                        }
+
+                        msg += "\n"
+                        //console.log(msg);
+                        message.channel.send(msg).then();
+                    });
+                }
+
+                break;
 
         case '§connect':
         case '§ringdalahästen':
@@ -298,7 +326,7 @@ client.on('message', (message) => {
                 console.log("Connected!" + message.member.voiceChannel);
                 break;
             } catch (TypeError) {
-                console.log("channel undefined")
+                console.log("channel undefined");
             }
 
             break;
@@ -309,14 +337,14 @@ client.on('message', (message) => {
             break;
 
         case '§test':
-            nWordCounter(message)
+            nWordCounter(message);
             break;
 
         case '§kill':
-            code = message.content.slice(7)
-            console.log("EXIT WITH CODE:", code)
+            let code = message.content.slice(7);
+            console.log("EXIT WITH CODE:", code);
             message.delete().then();
-            process.exit(code);
+            process.exit(parseInt(code));
             break;
     }
 
