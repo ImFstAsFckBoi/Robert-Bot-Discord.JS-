@@ -1,7 +1,7 @@
 ﻿/* jshint esversion: 6 */
 /* moz */
 
-let devmode = false;
+let devmode = true;
 
 const { prefix, token, giphyKey } = require("./config.json");
 
@@ -14,17 +14,65 @@ giphy = GphApiClient(giphyKey);
 
 banned_words = [/n+[ie]+g+((?:e+r+)|(?:a+))/im, /knee gear/im];
 
+
 const helplist = [
     `Command prefix: ${prefix}`,
     'gif ...',
     'juice/pappa/sabai/brum/pumpar/bigtime/bigtimerush/nigga/fuck/stalingrad'
 ];
 
+function karmaCounter(_reaction) {
+
+
+    fs.readFile('./karma.json', (error, data) => {
+        let updoot = JSON.parse(data.toString());
+
+        let value;
+
+        switch (_reaction.emoji.name) {
+            case "updoot":
+                value = 1;
+                break;
+
+            case "downdoot":
+                value = -1;
+                break;
+        }
+
+        if (updoot[_reaction.message.author.id] == null) {
+            updoot[_reaction.message.author.id] = value;
+        } else {
+            updoot[_reaction.message.author.id] += value;
+        }
+
+        console.log(updoot);
+
+        fs.writeFile('./karma.json', JSON.stringify(updoot), "utf8", (error) => {
+            if (error) {
+                console.log(error)
+            }
+        });
+
+        /*try { //TODO: PERMS
+            let member = _reaction.message.member;
+            member.setNickname(member.nickname + "(" + updoot[member.user.id] + ")").then(() => {
+                console.log(member.nickname);
+            });
+        } catch () {
+            console.log("EWOW")
+        }*/
+    });
+}
+
 function nWordCounter(_message) {
     fs.readFile('./nord.json', (error, data) => {
         let json = JSON.parse(data.toString());
 
-        json[_message.author.id.toString()] += 1;
+        if (json[_message.author.id.toString()] == null) {
+            json[_message.author.id.toString()] = 1;
+        } else {
+            json[_message.author.id.toString()] += 1;
+        }
 
         fs.writeFile('./nord.json', JSON.stringify(json), "utf8", (error) => {
             if (error) {
@@ -192,7 +240,6 @@ client.on('message', (message) => {
             message.channel.send('http://scp-wiki.wdfiles.com/local--files/scp-001/fractal001').then()
         } else {
             message.channel.send(`http://www.scp-wiki.net/scp-${entry}`).then()
-            delete scp;
         }
     }
     // SCP SERACH MONKA
@@ -282,42 +329,42 @@ client.on('message', (message) => {
             break;
 
         case "nw":
-                if (!/ls/i.test(message.content)) {
-                    break;
-                }
+            if (!/ls/i.test(message.content)) {
+                break;
+            }
 
-                if (message.mentions.users.first())
-                {
-                    let user = message.mentions.users.first();
+            if (message.mentions.users.first())
+            {
+                let user = message.mentions.users.first();
 
-                    fs.readFile('./nord.json', (error, data) => {
-                        let msg = "";
+                fs.readFile('./nord.json', (error, data) => {
+                    let msg = "";
 
-                        for ([key, value] of Object.entries(JSON.parse(data.toString()))) {
-                            if (user.id.toString() === key) {
-                                msg += `${client.users.get(key).username}: ${value} \n`;
-                            }
-                        }
-
-                        msg += "\n"
-                        //console.log(msg);
-                        message.channel.send(msg).then();
-                    });
-                } else {
-                    fs.readFile('./nord.json', (error, data) => {
-                        let msg = "";
-
-                        for ([key, value] of Object.entries(JSON.parse(data.toString()))) {
+                    for ([key, value] of Object.entries(JSON.parse(data.toString()))) {
+                        if (user.id.toString() === key) {
                             msg += `${client.users.get(key).username}: ${value} \n`;
                         }
+                    }
 
-                        msg += "\n"
-                        //console.log(msg);
-                        message.channel.send(msg).then();
-                    });
-                }
+                    msg += "\n"
+                    //console.log(msg);
+                    message.channel.send(msg).then();
+                });
+            } else {
+                fs.readFile('./nord.json', (error, data) => {
+                    let msg = "";
 
-                break;
+                    for ([key, value] of Object.entries(JSON.parse(data.toString()))) {
+                        msg += `${client.users.get(key).username}: ${value} \n`;
+                    }
+
+                    msg += "\n"
+                    //console.log(msg);
+                    message.channel.send(msg).then();
+                });
+            }
+
+            break;
 
         case '§connect':
         case '§ringdalahästen':
@@ -330,14 +377,54 @@ client.on('message', (message) => {
             }
 
             break;
-        
+        case "§upvote":
+            message.react("708416577787396097");
+            return;
+            break;
+
+        case "§downvote":
+            message.react("696804691039748157");
+            return;
+            break;
+
         case '§disconnect':
             message.member.voiceChannel.leave();
             console.log("Disconected!!" + message.member.voiceChannel);
             break;
 
         case '§test':
-            nWordCounter(message);
+            //TEMP FÖR PRINT list//TODO fixa :(
+            if (message.mentions.users.first())
+            {
+                let user = message.mentions.users.first();
+
+                fs.readFile('./karma.json', (error, data) => {
+                    let msg = "";
+
+                    for ([key, value] of Object.entries(JSON.parse(data.toString()))) {
+                        if (user.id.toString() === key) {
+                            msg += `${client.users.get(key).username}: ${value} \n`;
+                        }
+                    }
+
+                    msg += "\n"
+                    //console.log(msg);
+                    message.channel.send(msg).then();
+                });
+            } else {
+                fs.readFile('./karma.json', (error, data) => {
+                    let msg = "";
+
+                    for ([key, value] of Object.entries(JSON.parse(data.toString()))) {
+                        msg += `${client.users.get(key).username}: ${value} \n`;
+                    }
+
+                    msg += "\n"
+                    //console.log(msg);
+                    message.channel.send(msg).then();
+                });
+            }
+            //TEMP//
             break;
 
         case '§kill':
@@ -353,10 +440,12 @@ client.on('message', (message) => {
     }
 });
 
-client.login(token).then();
+client.on('messageReactionAdd', (reaction) => {
+    if (reaction.emoji.name === "updoot" || reaction.emoji.name === "downdoot") {
+        karmaCounter(reaction)
+        console.log(reaction);
+    }
 
-/*
-client.on('disconnect', (message) => {
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAA")
-})
-*/
+});
+
+client.login(token).then();
