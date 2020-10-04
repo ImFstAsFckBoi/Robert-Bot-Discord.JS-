@@ -21,68 +21,65 @@ const helplist = [
     'juice/pappa/sabai/brum/pumpar/bigtime/bigtimerush/nigga/fuck/stalingrad'
 ];
 
-function karmaCounter(_reaction) {
 
 
-    fs.readFile('./karma.json', (error, data) => {
-        let updoot = JSON.parse(data.toString());
+function ls(_message, type) {
+    fs.readFile('./stats.json', (error, data) => {
+        let json = JSON.parse(data.toString());
+        let mentions = _message.mentions.users;
+        let msg = ""// = type + " points:\n";
 
-        let value;
-
-        switch (_reaction.emoji.name) {
-            case "updoot":
-                value = 1;
-                break;
-
-            case "downdoot":
-                value = -1;
-                break;
-        }
-
-        if (updoot[_reaction.message.author.id] == null) {
-            updoot[_reaction.message.author.id] = value;
-        } else {
-            updoot[_reaction.message.author.id] += value;
-        }
-
-        console.log(updoot);
-
-        fs.writeFile('./karma.json', JSON.stringify(updoot), "utf8", (error) => {
-            if (error) {
-                console.log(error)
+        if (mentions.size > 0) {
+            for ([key, value] of Object.entries(json[type])) {
+                if (mentions[key] !== null) {
+                    try {
+                        msg += `${client.users.get(key).username}: ${value} \n`;
+                    } catch (TypeError) {}
+                }
             }
-        });
+        } else {
+            for ([key, value] of Object.entries(json[type])) {
+                try {
+                    msg += `${client.users.get(key).username}: ${value} \n`;
+                } catch (TypeError) {}
+            }
+        }
 
-        /*try { //TODO: PERMS
-            let member = _reaction.message.member;
-            member.setNickname(member.nickname + "(" + updoot[member.user.id] + ")").then(() => {
-                console.log(member.nickname);
-            });
-        } catch () {
-            console.log("EWOW")
-        }*/
+        msg += "\n";
+        _message.channel.send(msg.toString()).then();
     });
 }
 
-function nWordCounter(_message) {
-    fs.readFile('./nord.json', (error, data) => {
+function statManip(_message, type, value) {
+    fs.readFile('./stats.json', (error, data) => {
         let json = JSON.parse(data.toString());
 
-        if (json[_message.author.id.toString()] == null) {
-            json[_message.author.id.toString()] = 1;
+        if (json[type][_message.author.id.toString()] == null) {
+            json[type][_message.author.id.toString()] = value;
         } else {
-            json[_message.author.id.toString()] += 1;
+            json[type][_message.author.id.toString()] += value;
         }
 
-        fs.writeFile('./nord.json', JSON.stringify(json), "utf8", (error) => {
+        console.log(_message.author.username, "+ 1", type)
+        fs.writeFile('./stats.json', JSON.stringify(json), "utf8", (error) => {
             if (error) {
                 console.log(error)
             }
         });
     });
+    /*
+    try { //TODO: PERMS
+        let member = _reaction.message.member;
+        member.setNickname(member.nickname + "(" + updoot[member.user.id] + ")").then(() => {
+            console.log(member.nickname);
+        });
+    } catch () {
+        console.log("EWOW")
+    }
+    */
 }
 
-function gifSearch(searchTerm, _message) { //TODO: NEEDS TO BE FIXED DONT KNOW HOW
+function gifSearch(searchTerm, _message) {
     giphy.search("gifs", {q: searchTerm}).then( (response) => {
         let responseFinal = response.data[Math.floor(Math.random() * 10 + 1) % response.data.length];
         _message.channel.send("Here is your gif kind sir" + _message.author, {files: [responseFinal.images.fixed_height.url]}).then();
@@ -209,7 +206,7 @@ client.on('message', (message) => {
                 message.channel.send("SLUTA!").then()
             }
 
-            nWordCounter(message);
+            statManip(message, "n-word", 1);
         }
 
     });
@@ -256,7 +253,7 @@ client.on('message', (message) => {
     else if (message.content.startsWith(prefix + 'epadiss')) { switchArgs = 'epadiss'; }
     else if (message.content.startsWith(prefix + 'juwaini')) { switchArgs = 'juwaini'; }
     else if (message.content.startsWith(prefix + prefix + 'kill')) {switchArgs = '§kill'}
-    else if (message.content.startsWith(prefix + 'nw')) {switchArgs = 'nw'}
+    else if (message.content.startsWith(prefix + 'ls')) {switchArgs = 'ls'}
 
 
     switch (switchArgs) {
@@ -328,40 +325,11 @@ client.on('message', (message) => {
             playFile('assets/bigtime.mp3', message, client.channels.get('743070954900553871'))
             break;
 
-        case "nw":
-            if (!/ls/i.test(message.content)) {
-                break;
-            }
-
-            if (message.mentions.users.first())
-            {
-                let user = message.mentions.users.first();
-
-                fs.readFile('./nord.json', (error, data) => {
-                    let msg = "";
-
-                    for ([key, value] of Object.entries(JSON.parse(data.toString()))) {
-                        if (user.id.toString() === key) {
-                            msg += `${client.users.get(key).username}: ${value} \n`;
-                        }
-                    }
-
-                    msg += "\n"
-                    //console.log(msg);
-                    message.channel.send(msg).then();
-                });
-            } else {
-                fs.readFile('./nord.json', (error, data) => {
-                    let msg = "";
-
-                    for ([key, value] of Object.entries(JSON.parse(data.toString()))) {
-                        msg += `${client.users.get(key).username}: ${value} \n`;
-                    }
-
-                    msg += "\n"
-                    //console.log(msg);
-                    message.channel.send(msg).then();
-                });
+        case "ls":
+            if (/nw/i.test(message.content)) {
+                ls(message, "n-word")
+            } else if (/krma/i.test(message.content)) {
+                ls(message, "karma")
             }
 
             break;
@@ -378,12 +346,12 @@ client.on('message', (message) => {
 
             break;
         case "§upvote":
-            message.react("708416577787396097");
+            message.react("708416577787396097").then();
             return;
             break;
 
         case "§downvote":
-            message.react("696804691039748157");
+            message.react("696804691039748157").then();
             return;
             break;
 
@@ -393,38 +361,6 @@ client.on('message', (message) => {
             break;
 
         case '§test':
-            //TEMP FÖR PRINT list//TODO fixa :(
-            if (message.mentions.users.first())
-            {
-                let user = message.mentions.users.first();
-
-                fs.readFile('./karma.json', (error, data) => {
-                    let msg = "";
-
-                    for ([key, value] of Object.entries(JSON.parse(data.toString()))) {
-                        if (user.id.toString() === key) {
-                            msg += `${client.users.get(key).username}: ${value} \n`;
-                        }
-                    }
-
-                    msg += "\n"
-                    //console.log(msg);
-                    message.channel.send(msg).then();
-                });
-            } else {
-                fs.readFile('./karma.json', (error, data) => {
-                    let msg = "";
-
-                    for ([key, value] of Object.entries(JSON.parse(data.toString()))) {
-                        msg += `${client.users.get(key).username}: ${value} \n`;
-                    }
-
-                    msg += "\n"
-                    //console.log(msg);
-                    message.channel.send(msg).then();
-                });
-            }
-            //TEMP//
             break;
 
         case '§kill':
@@ -441,11 +377,14 @@ client.on('message', (message) => {
 });
 
 client.on('messageReactionAdd', (reaction) => {
-    if (reaction.emoji.name === "updoot" || reaction.emoji.name === "downdoot") {
-        karmaCounter(reaction)
-        console.log(reaction);
+    switch (reaction.emoji.name) {
+        case "updoot":
+            statManip(reaction.message, "karma", 1)
+            break;
+        case "downdoot":
+            statManip(reaction.message, "karma", -1)
+            break;
     }
-
 });
 
 client.login(token).then();
