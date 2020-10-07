@@ -1,5 +1,6 @@
 {
     "prefix": "<command prefix>",
     "token": "<bot token>",
-    "giphyKey" : "<giphy api token>"
+    "giphyKey" : "<giphy api token>",
+    "devmode" : <true||false>
 }
