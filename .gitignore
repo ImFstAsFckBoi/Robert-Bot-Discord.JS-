@@ -2,3 +2,4 @@ config.json
 /lodash
 /.idea
 test*
+stats.json

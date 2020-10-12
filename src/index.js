@@ -38,14 +38,17 @@ client.on('message', (message) => {
 
     switch(message.author.id) {
 
-        case "264390450360614912":
+        case "264390450360614912": //SUMA
             message.react('🇩🇪').then()
             break;
 
-        case "376748559212740608":
+        case "376748559212740608": //ANNA
             message.react('🇫🇮').then()
             break;
 
+        case "322290807128457217": //"SCOOB"
+            message.channel.send(message.author.toString(), {files: ["https://cdn.discordapp.com/attachments/615075756434915349/764579130058080306/16718c2.png"]} ).then()
+            break;
         /*case "174966806606381057":
             message.react('🤡').then()
             break;*/
