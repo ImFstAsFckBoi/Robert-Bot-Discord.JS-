@@ -92,4 +92,16 @@ client.on('messageReactionAdd', (reaction) => {
     }
 });
 
+client.on('messageReactionRemove', (reaction) => {
+    console.log("BRUH", reaction.emoji.name)
+
+    switch (reaction.emoji.name) {
+        case "updoot":
+            fsMgr.statManip(reaction.message, "karma", -1)
+            break;
+        case "downdoot":
+            fsMgr.statManip(reaction.message, "karma", 1)
+            break;
+    }
+});
 client.login(token).then();
