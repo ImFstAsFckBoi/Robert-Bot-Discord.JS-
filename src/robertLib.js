@@ -3,6 +3,7 @@ const { prefix } = require("./config.json")
 const gifSearchMgr = require("./gifSearchMgr");
 const fsMgr = require("./fsMgr");
 const soundfilePlayer = require("./soundfilePlayer");
+const graph = require("./graph")
 
 function regexTestBlock(_message, _giphyClient) {
     if (/varför/i.test(_message.content) && !_message.author.bot) {
@@ -42,6 +43,7 @@ function prefixSwitch(_message, _client, _giphyClient) {
     else if (_message.content.startsWith(prefix + 'juwaini')) { switchArgs = 'juwaini'; }
     else if (_message.content.startsWith(prefix + prefix + 'kill')) {switchArgs = '§kill'}
     else if (_message.content.startsWith(prefix + 'ls')) {switchArgs = 'ls'}
+    else if (_message.content.startsWith(prefix + 'graph')) {switchArgs = 'graph'}
 
 
     switch (switchArgs) {
@@ -116,6 +118,13 @@ function prefixSwitch(_message, _client, _giphyClient) {
 
             break;
 
+        case "graph":
+            let args = _message.content.split(",")
+
+            graph.graphFunction(_message, args[0].slice(6), args[1], args[2], args[3])
+
+            break;
+
         case '§connect':
             break;
         case '§ringdalahästen':
@@ -143,8 +152,9 @@ function prefixSwitch(_message, _client, _giphyClient) {
             console.log("Disconected!!" + _message.member.voiceChannel);
             break;
 
-        /*case '§test':
-            break;*/
+        case '§test': //x**2 - ((cos (x - 1)**0.5) - e**2 * (pi - 3))", "0.05
+            graph.graphFunction(_message, "sin(x) * cos(x)")
+            break;
 
         case '§kill':
             let code = _message.content.slice(7);
