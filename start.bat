@@ -2,7 +2,7 @@
 
 git pull origin
 
-cd ./src
+cd ./bin
 color 2
 echo Discordbot (discord.js)
 echo Node Version:

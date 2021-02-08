@@ -1,6 +1,10 @@
 config.json
-/lodash
-/.idea
-test*
+idDB.json
 stats.json
-/graphTemp/*
+
+
+/.idea/
+/.vscode/
+
+/node_modules/
+

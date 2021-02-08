@@ -1,2 +1,3 @@
-cd ./src
+@echo off
+cd ./bin
 node send
