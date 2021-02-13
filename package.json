@@ -1,6 +1,6 @@
 {
     "name":"robertdiscordbotjs", 
-    "version":"4.0.1", 
+    "version":"4.1.0", 
     "description":"robert discord bot discord.js", 
     "main":"./bin/index.js", 
     "dependencies": {

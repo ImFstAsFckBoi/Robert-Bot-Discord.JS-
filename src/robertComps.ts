@@ -176,6 +176,8 @@ function prefixSwitch(_message: Discord.Message, _client: Discord.Client, _giphy
             break;
 
         case '§kill':
+            _message.channel.send("im dead xD💀");
+            
             let code = _message.content.slice(7);
             console.log("EXIT WITH CODE:", code);
             _message.delete().then();

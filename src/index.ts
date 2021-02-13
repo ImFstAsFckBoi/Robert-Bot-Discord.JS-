@@ -7,14 +7,14 @@ const emojis = require("./assets/data/emoji.json")
 const {version} = require("../package.json")
 
 
-import { ls, statManip} from "./fsMgr";
+import { ls, profileManip} from "./fsMgr";
 import {regexTestBlock, prefixSwitch} from "./robertComps";
 import {scpSearch} from "./scp";
 
 import Discord from "discord.js";
 const GphApiClient = require("giphy-js-sdk-core");
 import {argv} from "process"
-import { randomInt } from "crypto";
+import { Profile } from "./dataStruct";
 
 const client = new Discord.Client();
 const giphyClient = GphApiClient(giphyKey);
@@ -38,6 +38,8 @@ client.once("ready", () => {
         }
       
     }
+
+    Profile.importAll().forEach((p) => {new Profile(p).update(client.users.cache.get(p.id) as Discord.User)})
 });
 
 
@@ -59,8 +61,8 @@ client.on('message', (message: Discord.Message) => {
 
         case ids["ANNA"]: //ANNA
             message.react('🇫🇮').then();
-            
-            if (randomInt(0, 100) == 69) {
+
+            if (Math.random() * 100 == 69) {
                 message.author.send("https://cdn.discordapp.com/attachments/669537070804500489/809908739678142474/sdasda.png");
             }
             
@@ -75,7 +77,7 @@ client.on('message', (message: Discord.Message) => {
             break;
         
         case ids["EVE"]:
-            message.react(emojis[randomInt(0, emojis.length)]);
+            message.react(emojis[Math.random() * emojis.length]);
             break;
     }
 
@@ -83,13 +85,15 @@ client.on('message', (message: Discord.Message) => {
 
     banned_words.forEach((i) => {
         if (i.test(message.content) && !message.author.bot) {
-            if (message.author.id === "241675681258274817") {
+            if (message.author.id == "241675681258274817") {
                 message.author.send("DAVID!, SLUTA!").then();
             } else {
                 message.channel.send("SLUTA!").then();
             }
-
-            statManip(message, "n-word", 1);
+                
+            profileManip(message, "n_word", 1);
+           
+            return;
         }
     });
 
@@ -117,10 +121,10 @@ client.on('messageReactionAdd', (reaction) => {
 
     switch (reaction.emoji.name) {
         case "updoot":
-            statManip(reaction.message, "karma", 1);
+            profileManip(reaction.message, "karma", 1);
             break;
         case "downdoot":
-            statManip(reaction.message, "karma", -1);
+            profileManip(reaction.message, "karma", -1);
             break;
     }
 });
@@ -130,10 +134,10 @@ client.on('messageReactionRemove', (reaction) => {
 
     switch (reaction.emoji.name) {
         case "updoot":
-            statManip(reaction.message, "karma", -1);
+            profileManip(reaction.message, "karma", -1);
             break;
         case "downdoot":
-             statManip(reaction.message, "karma", 1);
+             profileManip(reaction.message, "karma", 1);
             break;
     }
 });
