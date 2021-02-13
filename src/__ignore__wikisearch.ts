@@ -1,6 +1,6 @@
 /* jshint esversion: 6 */
 
-/*
+
 function wikiSearch(searchTerm: string) {
     let rtrnVal: string;
 
@@ -10,10 +10,10 @@ function wikiSearch(searchTerm: string) {
             fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=info&pageids=${response.query.search[0].pageid}&inprop=url`)
                 .then(function(response){return response.json();})
                 .then(function(response) {
-                    return response.qurey.pages[]
+                    return response.qurey.pages[0]
                 });
         });
 
     
 }
-*/
+

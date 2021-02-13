@@ -37,6 +37,10 @@ function regexTestBlock(_message: Discord.Message, _giphyClient: any) {
     if (/queer/.test(_message.content) && !_message.author.bot) {
         _message.channel.send("Queer är en slur!").then();
     }
+
+    if (/\$omar/i.test(_message.content) && !_message.author.bot) {
+        _message.channel.send("https://upload.wikimedia.org/wikipedia/commons/5/5f/Ilhan_Omar%2C_official_portrait%2C_116th_Congress_%28cropped%29_A.jpg").then();
+    }
 }
 
 function prefixSwitch(_message: Discord.Message, _client: Discord.Client, _giphyClient: any) {
