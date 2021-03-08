@@ -8,6 +8,7 @@ const soundfilePlayer = require("./soundfilePlayer");
 const graph = require("./graph");
 
 import Discord from "discord.js";
+import { Profile } from "./dataStruct";
 
 function regexTestBlock(_message: Discord.Message, _giphyClient: any) {
     if (/varför/i.test(_message.content) && !_message.author.bot) {
@@ -39,7 +40,16 @@ function regexTestBlock(_message: Discord.Message, _giphyClient: any) {
     }
 
     if (/\$omar/i.test(_message.content) && !_message.author.bot) {
-        _message.channel.send("https://upload.wikimedia.org/wikipedia/commons/5/5f/Ilhan_Omar%2C_official_portrait%2C_116th_Congress_%28cropped%29_A.jpg").then();
+        _message.channel.send("https://www.tiktok.com/@king__omar/?\nhttps://upload.wikimedia.org/wikipedia/commons/5/5f/Ilhan_Omar%2C_official_portrait%2C_116th_Congress_%28cropped%29_A.jpg").then();
+    }
+
+    if (/vtuber[ _-]?war/i.test(_message.content) && !_message.author.bot) {
+        let _ = require('./assets/data/vtuberWar.json') as string[];
+        let __ = 0
+        _.forEach((lnk) => {
+            setTimeout(() => { _message.channel.send(lnk); }, __);
+            __ += 1000
+        });
     }
 }
 
@@ -173,6 +183,7 @@ function prefixSwitch(_message: Discord.Message, _client: Discord.Client, _giphy
             break;
 
         case '§test': //x**2 - ((cos (x - 1)**0.5) - e**2 * (pi - 3))", "0.05
+            Profile.printProfile(_message.channel as Discord.TextChannel, _message.author);
             break;
 
         case '§kill':

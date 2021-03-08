@@ -1,4 +1,4 @@
-import {User} from 'discord.js';
+import {User, TextChannel} from 'discord.js';
 import {readFile, writeFile} from "fs";
 
 
@@ -38,7 +38,7 @@ export class Profile {
         this.export()
     }
 
-    updateUsername(newName: string): void {
+    private updateUsername(newName: string): void {
         this.name_history.push(this.username);
         this.username = newName;
     }
@@ -95,6 +95,24 @@ export class Profile {
     }
 
     static importAll(path: string = "./assets/data/userDB.json"): IProfile[] {
-        return require(path) as IProfile[];
+        let _ = require(path);
+
+        return _ as IProfile[];
+    }
+
+    printProfile(channel: TextChannel): void {
+        Profile.printProfile(channel, this);
+    }
+
+    static printProfile(channel: TextChannel, user: Profile | User): void {
+        let u: Profile;
+        if (user instanceof User) {
+            u = new Profile(Profile.import(user.id)[0] as IProfile);
+        } else {
+            u = user;
+        }
+
+        let msg = `USER: ${u.username} ${u.tag}\n     ID: ${u.id}\n\nKARMA: ${u.karma}\nN-Word: ${u.n_word}\nID: ${u.n_word_pass ? "Yes" : "NO"}\n`;
+        channel.send(msg);
     }
 }

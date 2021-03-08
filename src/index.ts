@@ -14,7 +14,7 @@ import {scpSearch} from "./scp";
 import Discord from "discord.js";
 const GphApiClient = require("giphy-js-sdk-core");
 import {argv} from "process"
-import { Profile } from "./dataStruct";
+import { IProfile, Profile } from "./dataStruct";
 
 const client = new Discord.Client();
 const giphyClient = GphApiClient(giphyKey);
@@ -39,9 +39,13 @@ client.once("ready", () => {
       
     }
 
-    Profile.importAll().forEach((p) => {new Profile(p).update(client.users.cache.get(p.id) as Discord.User)})
+    Profile.importAll().forEach((p) => {
+        let u = client.users.cache.get(p.id) as Discord.User;
+        if (u != undefined) {
+            new Profile(p).update(u);
+        }
+    });
 });
-
 
 //Message Listener
 client.on('message', (message: Discord.Message) => {
@@ -85,6 +89,12 @@ client.on('message', (message: Discord.Message) => {
 
     banned_words.forEach((i) => {
         if (i.test(message.content) && !message.author.bot) {
+            if (Profile.import(message.author.id)[1] == 0) {
+                let _ = Profile.import(message.author.id)[0] as IProfile;
+                if (_.n_word_pass) {
+                    return;
+                }
+            }
             if (message.author.id == "241675681258274817") {
                 message.author.send("DAVID!, SLUTA!").then();
             } else {
@@ -109,11 +119,14 @@ client.on('message', (message: Discord.Message) => {
 
 });
 
-client.on("typingStart", (channel, user) =>
+client.on("typingStart", (channel, user, ) =>
 {
-    if (user.id == "174966806606381057") return;
+    /*
+    console.log(user.typingDurationIn(channel))
+    if (user.id != "376748559212740608") return;
     let c = channel as Discord.TextChannel;
     c.send("yeah type faster " + user.username);
+    */
 });
 
 client.on('messageReactionAdd', (reaction) => {
@@ -123,6 +136,7 @@ client.on('messageReactionAdd', (reaction) => {
         case "updoot":
             profileManip(reaction.message, "karma", 1);
             break;
+        
         case "downdoot":
             profileManip(reaction.message, "karma", -1);
             break;
@@ -142,4 +156,4 @@ client.on('messageReactionRemove', (reaction) => {
     }
 });
 
-client.login(token).then();
+client.login(token);
