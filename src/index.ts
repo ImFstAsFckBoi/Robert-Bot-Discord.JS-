@@ -7,13 +7,13 @@ const emojis = require("./assets/data/emoji.json")
 const {version} = require("../package.json")
 
 
-import { ls, profileManip} from "./fsMgr";
+import { profileManip} from "./fsMgr";
 import {regexTestBlock, prefixSwitch} from "./robertComps";
 import {scpSearch} from "./scp";
 
 import Discord from "discord.js";
 const GphApiClient = require("giphy-js-sdk-core");
-import {argv} from "process"
+import { argv } from "process";
 import { IProfile, Profile } from "./dataStruct";
 
 const client = new Discord.Client();
@@ -49,6 +49,8 @@ client.once("ready", () => {
 
 //Message Listener
 client.on('message', (message: Discord.Message) => {
+    //console.log(message.author.typingDurationIn(message.channel));
+    //console.log(message.author.typingSinceIn(message.channel).getMilliseconds());
     if (!message.author.bot) {
         try {
             console.log('Message:', message.content, 'Author:', message.author.username);
@@ -66,7 +68,7 @@ client.on('message', (message: Discord.Message) => {
         case ids["ANNA"]: //ANNA
             message.react('🇫🇮').then();
 
-            if (Math.random() * 100 == 69) {
+            if (Math.floor(Math.random() * 100) == 69) {
                 message.author.send("https://cdn.discordapp.com/attachments/669537070804500489/809908739678142474/sdasda.png");
             }
             
@@ -81,7 +83,7 @@ client.on('message', (message: Discord.Message) => {
             break;
         
         case ids["EVE"]:
-            message.react(emojis[Math.random() * emojis.length]);
+            message.react(emojis[Math.floor(Math.random() * emojis.length)]);
             break;
     }
 
@@ -119,16 +121,19 @@ client.on('message', (message: Discord.Message) => {
 
 });
 
-client.on("typingStart", (channel, user, ) =>
-{
+client.on("typingStart", (channel, user) => {
     /*
     console.log(user.typingDurationIn(channel))
     if (user.id != "376748559212740608") return;
     let c = channel as Discord.TextChannel;
     c.send("yeah type faster " + user.username);
     */
+    
+    client.on('message', () => {
+        console.log(user.typingDurationIn(channel))
+        
+    });
 });
-
 client.on('messageReactionAdd', (reaction) => {
     console.log("BRUH", reaction.emoji.name);
 

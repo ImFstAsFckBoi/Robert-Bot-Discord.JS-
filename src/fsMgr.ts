@@ -50,7 +50,6 @@ function profileManip(_message: Discord.Message, type: string, value: string | n
             console.log("BIG ERROR");
             _message.channel.send("BIG SHIT; VERY SORRY");
             return;
-            break;
         
         default:
             return;

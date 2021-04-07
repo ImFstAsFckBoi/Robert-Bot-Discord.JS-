@@ -2,7 +2,7 @@
 
 import Discord from "discord.js";
 
-function playFile(dir: string, message: Discord.Message, vc?: Discord.VoiceChannel) //TODO: CLEAN
+function playFile(dir: string, message: Discord.Message, vc?: Discord.VoiceChannel): void//TODO: CLEAN
 {
    
 
@@ -22,11 +22,11 @@ function playFile(dir: string, message: Discord.Message, vc?: Discord.VoiceChann
         return;
     }
 
-    try {
+    
         if (_voiceChannel.joinable) {
-            console.log("*Connecting...*" + _voiceChannel);
+            console.log("*Connecting...* " + _voiceChannel);
             _voiceChannel.join()
-                .then(connection => {
+                .then((connection) => {
                     console.log("Connected!" + _voiceChannel);
                     let dispatcher = connection.play(dir);
 
@@ -36,15 +36,17 @@ function playFile(dir: string, message: Discord.Message, vc?: Discord.VoiceChann
                             _voiceChannel.leave();
                         }, 1000);
                     });
-                }); //.catch(() => {
+                })
+                .catch(() => {
+                    _voiceChannel.leave();
+                });
+
             //message.channel.send("ERROR: uhuh, i did a fucky wucky, sowwy :flushed: ")
             //});
         } else {
             message.channel.send("Cannot join Voice channel!");
         }
-    } catch (err) {
-        _voiceChannel.leave()
-    }
+    
 
 }
 

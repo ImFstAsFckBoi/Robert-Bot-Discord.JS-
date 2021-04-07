@@ -1,7 +1,46 @@
 import {User, TextChannel} from 'discord.js';
 import {readFile, writeFile} from "fs";
+import faunadb from "faunadb";
+import { rejects } from 'assert';
+const { faunaKey } = require("./config.json");
+const faunaClient = new faunadb.Client({ secret: faunaKey })
 
+const {
+    Ref,
+    Paginate,
+    Get,
+    Select,
+    Match,
+    Index,
+    Create,
+    Collection,
+    Lambda,
+    Var,
+    Join,
+    Update,
+    Map,
+    Documents
+} = faunadb.query;
 
+/*
+Create(
+  Ref(
+    Collection("RobertDB"),
+    "174966806606381057"
+    ), 
+  {
+    data: {
+      id: "174966806606381057",
+      tag: "#2157",
+      username: "///////////////////////////",
+      name_history: [],
+      karma: 0,
+      n_word: 3,
+      n_word_pass: true
+    }
+  }
+)
+*/
 
 export interface IProfile {
     
@@ -14,7 +53,13 @@ export interface IProfile {
         n_word_pass: boolean
 }
 
-export class Profile {
+interface IProfileDocument
+{
+    ref: any,
+    ts: number,
+    data: IProfile
+}
+export class Profile implements IProfile {
     id: string;
     tag: string;
     username: string;
@@ -43,7 +88,7 @@ export class Profile {
         this.username = newName;
     }
 
-    export(path: string = "./assets/data/userDB.json"): void {
+    async export(path: string = "./assets/data/userDB.json"): Promise<void> {
         let usr = {
             "id": this.id,
             "tag": this.tag,
@@ -54,50 +99,87 @@ export class Profile {
             "n_word_pass": this.n_word_pass
         }
         
-        
-        let json = Profile.importAll();
-        let i = json.findIndex((p) => {return p.id == this.id});
-        if (i == -1) {
-            json.push(usr);
-        } else {
-            json[i] = usr;
+        let res = await faunaClient.query(
+            Update(
+                Ref(
+                    Collection("RobertDB"),
+                    this.id
+                ),
+                {
+                    data: this as IProfile
+                }
+            )
+        )
+        .catch((err) =>
+        {
+            console.log(err)
+        });
+
+        if (res == undefined)
+        {
+            let _res = await faunaClient.query(
+                Create(
+                    Ref(
+                        Collection("RobertDB"),
+                        this.id
+                    ),
+                    {
+                        data: this as IProfile
+                    }
+                )
+            )
+            .catch((_err) =>
+            {
+                console.log(_err);
+            });
+            
+            console.log(_res);
+            return;
         }
         
-        writeFile(path, JSON.stringify(json, null, 4), (_err) => {
-            if (_err) {
-                console.log(_err)
-            }
-        });
-        
+
+        console.log(res);
     }
 
-    static getTag(user: User): string {
+    private static getTag(user: User): string {
         return '#' + user.tag.split('#')[1];
     }
     
-    static import(id: string, path: string = "./assets/data/userDB.json"): [value: IProfile | null, success: number]
+    static async import(id: string): Promise<void> //Promise<[value: IProfile | null, success: number]>
     {
-        try {
-            let profiles = Profile.importAll()
+        let doc = await faunaClient.query(
+            Get(
+                Ref(
+                    Collection(
+                        "RobertDB"
+                    ),
+                    id
+                )
+            ) 
+        ).catch(() =>
+        {
             
-            let profile = profiles.find((p) => { return p.id == id });
+        })
+        
 
-            if (profile == undefined) {
-                return [null, 1]
-            } else {
-                return [profile, 0]
-            }
-
-        } catch (err) {
-            console.log(err)
-            return [null, 2]
-        }
+        console.log(doc);
     }
 
-    static importAll(path: string = "./assets/data/userDB.json"): IProfile[] {
-        let _ = require(path);
+    static async importAll(path: string = "./assets/data/userDB.json"): Promise<IProfile[]> {
+        let docs:any = faunaClient.query(
+            Map(
+                Paginate(Documents(Collection("RobertDB"))),
+                Lambda(x => Get(x))
+              )
+        ) 
+        
+        let out: IProfile[];
 
-        return _ as IProfile[];
+        docs.forEach((i: IProfileDocument) => {
+            out.push(i.data);
+        });
+        
+       
     }
 
     printProfile(channel: TextChannel): void {
@@ -116,3 +198,4 @@ export class Profile {
         channel.send(msg);
     }
 }
+

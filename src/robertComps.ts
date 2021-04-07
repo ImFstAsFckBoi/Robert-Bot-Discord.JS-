@@ -3,7 +3,7 @@
 const { prefix } = require("./config.json");
 
 import  {gifSearch} from "./gifSearchMgr";
-const fsMgr = require("./fsMgr");
+const { ls } = require("./fsMgr");
 const soundfilePlayer = require("./soundfilePlayer");
 const graph = require("./graph");
 
@@ -129,9 +129,9 @@ function prefixSwitch(_message: Discord.Message, _client: Discord.Client, _giphy
 
         case "ls":
             if (/nw/i.test(_message.content)) {
-                fsMgr.ls(_message, "n-word", _client);
+                ls(_message, "n-word", _client);
             } else if (/krma/i.test(_message.content)) {
-                fsMgr.ls(_message, "karma", _client);
+                ls(_message, "karma", _client);
             }
 
             break;
