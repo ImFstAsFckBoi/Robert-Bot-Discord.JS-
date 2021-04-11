@@ -1,6 +1,8 @@
-import {User, TextChannel} from 'discord.js';
-import {readFile, writeFile} from "fs";
 
+
+import { User, TextChannel, Client } from 'discord.js';
+import {fstat, readFileSync, writeFileSync} from "fs";
+import { GLOBAL_CLIENT } from "./index";
 
 
 export interface IProfile {
@@ -63,11 +65,7 @@ export class Profile {
             json[i] = usr;
         }
         
-        writeFile(path, JSON.stringify(json, null, 4), (_err) => {
-            if (_err) {
-                console.log(_err)
-            }
-        });
+        writeFileSync(path, JSON.stringify(json, null, 4));
         
     }
 
@@ -83,7 +81,26 @@ export class Profile {
             let profile = profiles.find((p) => { return p.id == id });
 
             if (profile == undefined) {
-                return [null, 1]
+            
+                try
+                {
+                    new Profile(GLOBAL_CLIENT.users.cache.get(id) as User).export()
+                    
+                    profiles = Profile.importAll()
+            
+                    profile = profiles.find((p) => { return p.id == id });
+
+                    if (profile == undefined) {
+                    
+                        return [null, 1];
+                    } else {
+                        return [profile, 0]
+                    }
+                }
+                catch
+                {
+                    return [null, 1]
+                }
             } else {
                 return [profile, 0]
             }
@@ -95,9 +112,11 @@ export class Profile {
     }
 
     static importAll(path: string = "./assets/data/userDB.json"): IProfile[] {
-        let _ = require(path);
-
-        return _ as IProfile[];
+        let _ = JSON.parse(readFileSync(path).toString()) as IProfile[];
+        
+        
+        
+        return _;
     }
 
     printProfile(channel: TextChannel): void {

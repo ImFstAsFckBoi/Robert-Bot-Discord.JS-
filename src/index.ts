@@ -16,7 +16,7 @@ const GphApiClient = require("giphy-js-sdk-core");
 import {argv} from "process"
 import { IProfile, Profile } from "./dataStruct";
 
-const client = new Discord.Client();
+export const GLOBAL_CLIENT = new Discord.Client();
 const giphyClient = GphApiClient(giphyKey);
 
 let banned_words: RegExp[] = [/n+[ie]+g+((?:e+r+)|(?:a+))/im, /knee gear/im];
@@ -25,14 +25,14 @@ const quiet = /-q(uiet)?/i.test(argv[2])
     
 
 //Startup message
-client.once("ready", () => {
+GLOBAL_CLIENT.once("ready", () => {
     console.log("__BOT_ONLINE!_______CTRL_+_C_=>_STOP__");
 
-    let usr = client.user as Discord.ClientUser;
+    let usr = GLOBAL_CLIENT.user as Discord.ClientUser;
         usr.setUsername("[§...] Robert " + version)
 
     if (!devmode && !quiet) {
-        let c = client.channels.cache.get('615075756434915349') as Discord.TextChannel;
+        let c = GLOBAL_CLIENT.channels.cache.get('615075756434915349') as Discord.TextChannel;
         if (c != undefined) {
             c.send('Robert har vaknat! (Och laddar up på Monster™)')
         }
@@ -40,15 +40,18 @@ client.once("ready", () => {
     }
 
     Profile.importAll().forEach((p) => {
-        let u = client.users.cache.get(p.id) as Discord.User;
-        if (u != undefined) {
+        let u = GLOBAL_CLIENT.users.cache.get(p.id);
+        
+        if (u != undefined)
+        {
+            console.log(u.username + " updated!")
             new Profile(p).update(u);
         }
     });
 });
 
 //Message Listener
-client.on('message', (message: Discord.Message) => {
+GLOBAL_CLIENT.on('message', (message: Discord.Message) => {
     if (!message.author.bot) {
         try {
             console.log('Message:', message.content, 'Author:', message.author.username);
@@ -85,7 +88,7 @@ client.on('message', (message: Discord.Message) => {
             break;
     }
 
-    regexTestBlock(message, giphyClient);
+    regexTestBlock(message, giphyClient, GLOBAL_CLIENT);
 
     banned_words.forEach((i) => {
         if (i.test(message.content) && !message.author.bot) {
@@ -115,11 +118,11 @@ client.on('message', (message: Discord.Message) => {
 
     if (message.content.slice(0, 1).toString() !== prefix) {return;}
 
-    prefixSwitch(message, client, giphyClient);
+    prefixSwitch(message, GLOBAL_CLIENT, giphyClient);
 
 });
 
-client.on("typingStart", (channel, user, ) =>
+GLOBAL_CLIENT.on("typingStart", (channel, user, ) =>
 {
     /*
     console.log(user.typingDurationIn(channel))
@@ -129,7 +132,7 @@ client.on("typingStart", (channel, user, ) =>
     */
 });
 
-client.on('messageReactionAdd', (reaction) => {
+GLOBAL_CLIENT.on('messageReactionAdd', (reaction) => {
     console.log("BRUH", reaction.emoji.name);
 
     switch (reaction.emoji.name) {
@@ -143,7 +146,7 @@ client.on('messageReactionAdd', (reaction) => {
     }
 });
 
-client.on('messageReactionRemove', (reaction) => {
+GLOBAL_CLIENT.on('messageReactionRemove', (reaction) => {
     console.log("BRUH", reaction.emoji.name);
 
     switch (reaction.emoji.name) {
@@ -156,4 +159,4 @@ client.on('messageReactionRemove', (reaction) => {
     }
 });
 
-client.login(token);
+GLOBAL_CLIENT.login(token);

@@ -15,7 +15,8 @@
 "start":"cd ./bin/ && node index.js", 
 "start quiet":"cd ./bin/ && node index.js -q", 
 
-"icli":"node ./bin/exp_cli.js", 
+"pretest":"npm run ps.build",
+"test":"npm run start quiet",
 
 "ps.build":"powershell tsc.cmd", 
 "postps.build":"powershell copy ./src/*.py ./bin/; copy ./config.json ./bin/config.json; echo Build complete! ", 

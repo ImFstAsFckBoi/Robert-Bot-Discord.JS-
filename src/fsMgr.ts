@@ -1,5 +1,6 @@
 import { IProfile, Profile } from './dataStruct';
 import Discord from "discord.js"
+import { O_EXCL } from 'constants';
 
 function ls(_message: Discord.Message, type: string, _client: Discord.Client): void {
     let profiles = Profile.importAll();
