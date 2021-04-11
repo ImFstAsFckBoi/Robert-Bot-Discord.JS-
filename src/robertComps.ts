@@ -8,9 +8,12 @@ const soundfilePlayer = require("./soundfilePlayer");
 const graph = require("./graph");
 
 import Discord from "discord.js";
-import { Profile } from "./dataStruct";
+import { Profile, IProfile } from "./dataStruct";
+import { Slots } from "./gamble";
+import { ALL } from "dns";
+import { group } from "console";
 
-function regexTestBlock(_message: Discord.Message, _giphyClient: any) {
+function regexTestBlock(_message: Discord.Message, _giphyClient: any, _client: Discord.Client) {
     if (/varför/i.test(_message.content) && !_message.author.bot) {
         _message.channel.send('https://media.discordapp.net/attachments/615075756434915349/707302720800948284/rip_robert.PNG').then();
     }
@@ -51,7 +54,31 @@ function regexTestBlock(_message: Discord.Message, _giphyClient: any) {
             __ += 1000
         });
     }
+
+    if (/§gamble (slots|roulette) (\S+)/.test(_message.content) && _message.content.startsWith(prefix))
+    {
+        console.log("aAAa")
+        let match = _message.content.match(/§gamble (slots|roulette) (\S+)/);
+        console.log(match);
+        
+        if (match!= undefined)
+        {
+            console.log("bBBb")
+           
+            console.log("cCCc")
+            switch (match[1])
+            {
+                case "slots":
+                    Slots(_message.channel as Discord.TextChannel, new Profile(Profile.import(_message.author.id)[0] as IProfile), _client, match[2]);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
 }
+
 
 function prefixSwitch(_message: Discord.Message, _client: Discord.Client, _giphyClient: any) {
     let switchArgs = _message.content.slice(1);
@@ -183,7 +210,8 @@ function prefixSwitch(_message: Discord.Message, _client: Discord.Client, _giphy
             break;
 
         case '§test': //x**2 - ((cos (x - 1)**0.5) - e**2 * (pi - 3))", "0.05
-            Profile.printProfile(_message.channel as Discord.TextChannel, _message.author);
+            //Profile.printProfile(_message.channel as Discord.TextChannel, _message.author);
+            
             break;
 
         case '§kill':
