@@ -1,1 +1,3 @@
 /node_modules
+.gitignore
+__ignore__*

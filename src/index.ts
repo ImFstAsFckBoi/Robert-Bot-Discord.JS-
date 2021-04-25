@@ -4,7 +4,7 @@
 const { prefix, token, giphyKey, devmode } = require("./config.json"); //TODO: MOVE___ + STATS
 const ids = require("./assets/data/idDB.json")
 const emojis = require("./assets/data/emoji.json")
-const {version} = require("../package.json")
+const {version} = require("./package.json")
 
 
 import { ls, profileManip} from "./fsMgr";

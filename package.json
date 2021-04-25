@@ -12,17 +12,16 @@
 "@types/node":"^14.14.16"
 }, 
 "scripts": {
-"start":"cd ./bin/ && node index.js", 
-"start quiet":"cd ./bin/ && node index.js -q", 
+"start":"node index.js", 
 
 "pretest":"npm run ps.build",
-"test":"npm run start quiet",
+"test":"cd ./bin/ && node index.js -q",
 
 "ps.build":"powershell tsc.cmd", 
 "postps.build":"powershell copy ./src/*.py ./bin/; copy ./config.json ./bin/config.json; echo Build complete! ", 
 
-"bash-build":"tsc", 
-"postbash-build":"cp ./src/*.py ./bin/ && cp ./config.json ./bin/config.json"
+"bash.build":"tsc", 
+"postbash.build":"cp ./src/*.py ./bin/ && cp ./config.json ./bin/config.json"
 }, 
 "repository": {
 "type":"git", 

@@ -4,7 +4,9 @@ WORKDIR /robert
 
 COPY package*.json ./
 
-RUN npm i
+RUN npm install
 
-COPY bin/* ./
+COPY bin/* ./ 
+COPY bin/assets/ ./assets 
+
 CMD ["npm", "start"]
