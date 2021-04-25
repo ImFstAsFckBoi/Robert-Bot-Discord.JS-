@@ -3,8 +3,5 @@ idDB.json
 stats.json
 
 
-/.idea/
-/.vscode/
-
 /node_modules/
-
+/test/
