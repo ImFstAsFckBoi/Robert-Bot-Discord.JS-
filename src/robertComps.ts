@@ -10,8 +10,7 @@ const graph = require("./graph");
 import Discord from "discord.js";
 import { Profile, IProfile } from "./dataStruct";
 import { Slots } from "./gamble";
-import { ALL } from "dns";
-import { group } from "console";
+import { mkNightcore } from "./nightcore";
 
 function regexTestBlock(_message: Discord.Message, _giphyClient: any, _client: Discord.Client) {
     if (/varför/i.test(_message.content) && !_message.author.bot) {
@@ -210,7 +209,7 @@ function prefixSwitch(_message: Discord.Message, _client: Discord.Client, _giphy
             break;
 
         case '§test': //x**2 - ((cos (x - 1)**0.5) - e**2 * (pi - 3))", "0.05
-            //Profile.printProfile(_message.channel as Discord.TextChannel, _message.author);
+            mkNightcore(_message);
             
             break;
 

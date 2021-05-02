@@ -4,7 +4,17 @@
 const { prefix, token, giphyKey, devmode } = require("./config.json"); //TODO: MOVE___ + STATS
 const ids = require("./assets/data/idDB.json")
 const emojis = require("./assets/data/emoji.json")
-const {version} = require("./package.json")
+
+let version: string;
+
+try
+{
+    version = require("../package.json")["version"];
+}
+catch (e)
+{
+    version = require("./package.json")["version"];
+}
 
 
 import { ls, profileManip} from "./fsMgr";
@@ -60,6 +70,7 @@ GLOBAL_CLIENT.on('message', (message: Discord.Message) => {
         }
     }
     
+
     switch(message.author.id) {
 
         case ids["SUMA"]: //SUMA

@@ -16,7 +16,7 @@ def graph(function, step = 0.1, lowerX = 0, upperX = 10):
 
     plt.plot(xAxis, yAxis)
 
-    plt.savefig('./assets/graphTemp/tempImg.png')
+    plt.savefig('./assets/temp/tempImg.png')
 
 def main():
         graph(lambda x: eval(argv[1]), eval(argv[2]), eval(argv[3]), eval(argv[4]))

@@ -15,11 +15,11 @@ function graphFunction(_message: Discord.Message, func: Function, step: string =
             return;
         }
 
-        _message.channel.send(`func: ${func.toString()}, step: ${step.toString()}, lower and upper bound: (${lowerBound.toString()}, ${upperBound.toString()}) `, {files: ["./assets/graphTemp/tempImg.png"]}).then();
+        _message.channel.send(`func: ${func.toString()}, step: ${step.toString()}, lower and upper bound: (${lowerBound.toString()}, ${upperBound.toString()}) `, {files: ["./assets/temp/tempImg.png"]}).then();
 
         setTimeout(() => {
             try {
-                fs.unlinkSync("./assets/graphTemp/tempImg.png");
+                fs.unlinkSync("./assets/temp/tempImg.png");
             } catch (error) {
                 console.log(error);
             }
